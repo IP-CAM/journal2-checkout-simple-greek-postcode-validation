@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification
+	xmlns="https://github.com/vqmod/vqmod"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="https://github.com/vqmod/vqmod https://raw.githubusercontent.com/vqmod/vqmod/master/vqmod.xsd"
+	>
+	<id><![CDATA[[VQMOD] Journal 2 - Advanced Opencart Theme: Simple Greek postcode validation]]></id>
+	<version>0.1.0</version>
+	<vqmver>2.6.3</vqmver>
+	<author>kanenas.net (aka Nikolas Branis) - nbran@kanenas.net</author>
+    <file name="catalog/controller/journal2/checkout.php" error="log">
+        <operation error="skip">
+            <search position="replace"><![CDATA[if ($country_info && $country_info['postcode_required'] && (utf8_strlen(trim($data[$key . 'postcode'])) < 2 || utf8_strlen(trim($data[$key . 'postcode'])) > 10)) {]]></search>
+            <add><![CDATA[
+        // kanenas: knns_journal2_checkout_simple_greek_postcode_validation.xml (start) <<
+        if ($country_info && $country_info['postcode_required'] && mb_strlen(trim($data[$key . 'postcode']), "UTF-8") != 5) {
+        // kanenas: knns_journal2_checkout_simple_greek_postcode_validation.xml (end) <<
+            ]]></add>
+        </operation>
+    </file>
+    <file name="catalog/language/english/checkout/checkout.php" error="log">
+        <operation error="skip">
+            <search position="replace"><![CDATA[$_['error_postcode']                 = 'Postcode must be between 2 and 10 characters!';]]></search>
+            <add><![CDATA[
+// kanenas: knns_journal2_checkout_simple_greek_postcode_validation.xml (start) <<
+$_['error_postcode']                 = 'Postcode must be a number, 5 characters without spaces!';
+// kanenas: knns_journal2_checkout_simple_greek_postcode_validation.xml (end) <<
+            ]]></add>
+        </operation>
+    </file>
+    <file name="catalog/language/greek/checkout/checkout.php" error="log">
+        <operation error="skip">
+            <search position="replace"><![CDATA[$_['error_postcode']                 = 'Ο ταχυδρομικός κώδικας πρέπει να είναι από 2 έως 10 χαρακτήρες!';]]></search>
+            <add><![CDATA[
+// kanenas: knns_journal2_checkout_simple_greek_postcode_validation.xml (start) <<
+$_['error_postcode']                 = 'Ο ταχυδρομικός κώδικας πρέπει να είναι αριθμός, 5 χαρακτήρες χωρίς κενά!';
+// kanenas: knns_journal2_checkout_simple_greek_postcode_validation.xml (end) <<
+            ]]></add>
+        </operation>
+    </file>
+    <file name="catalog/view/theme/journal2/template/journal2/checkout/address_form.tpl" error="log">
+        <operation error="skip">
+            <search position="replace"><![CDATA[<input type="text" name="<?php echo $type; ?>_postcode" value="<?php echo $postcode; ?>" placeholder="<?php echo $entry_postcode; ?>"]]></search>
+            <add><![CDATA[
+                    <?php // kanenas: knns_journal2_checkout_simple_greek_postcode_validation.xml (start) << ?>
+                    <input type="text" name="<?php echo $type; ?>_postcode" value="<?php echo $postcode; ?>" placeholder="<?php echo $entry_postcode; ?>" maxlength="5"
+                    <?php // kanenas: knns_journal2_checkout_simple_greek_postcode_validation.xml (end) << ?>
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search position="after"><![CDATA[</form>]]></search>
+            <add><![CDATA[
+    <?php // kanenas: knns_journal2_checkout_simple_greek_postcode_validation.xml (start) << ?>
+    <script>
+        function setInputFilter(textbox, inputFilter) {
+          ["input", "keydown", "keyup", "mousedown", "mouseup", "select", "contextmenu", "drop"].forEach(function(event) {
+            textbox.addEventListener(event, function() {
+              if (inputFilter(this.value)) {
+                this.oldValue = this.value;
+                this.oldSelectionStart = this.selectionStart;
+                this.oldSelectionEnd = this.selectionEnd;
+              } else if (this.hasOwnProperty("oldValue")) {
+                this.value = this.oldValue;
+                this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+              }
+            });
+          });
+        }
+        setInputFilter(document.getElementById("input-<?php echo $type; ?>-postcode"), function(value) {
+            return /^\d*$/.test(value);
+        });
+    </script>
+    <?php // kanenas: knns_journal2_checkout_simple_greek_postcode_validation.xml (end) << ?>
+            ]]></add>
+        </operation>
+    </file>
+</modification>
